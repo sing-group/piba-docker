@@ -1,0 +1,21 @@
+FROM jboss/wildfly:10.1.0.Final
+
+RUN /opt/jboss/wildfly/bin/add-user.sh test test1234 --silent
+
+ADD https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.13/mysql-connector-java-8.0.13.jar /opt/jboss/wildfly/standalone/deployments/mysql-connector-java-8.0.13.jar
+COPY backend/piba-backend-backend-0.1.0-SNAPSHOT.ear /opt/jboss/wildfly/standalone/deployments/
+COPY backend/standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
+
+USER root
+RUN chown jboss /opt/jboss/wildfly/standalone/deployments/*
+RUN sed -i 's/-Xmx512m/-Xmx4G/g' /opt/jboss/wildfly/bin/standalone.conf
+
+USER jboss
+CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0", "-Dpiba.files.dir=/piba-files"]
+
+ARG BACKEND_HTTP_PORT
+ARG BACKEND_IP
+ARG FRONTEND_IP
+
+RUN sed -i 's|name="java:global/piba/swagger/host" value="piba-backend:8080"|name="java:global/piba/swagger/host" value="${BACKEND_IP}:${BACKEND_HTTP_PORT}"|' /opt/jboss/wildfly/standalone/configuration/standalone.xml
+RUN sed -i 's|name="java:global/piba/frontend/url" value="http://piba-frontend/"|name="java:global/piba/frontend/url" value="http://${FRONTEND_IP}/"|' /opt/jboss/wildfly/standalone/configuration/standalone.xml

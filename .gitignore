@@ -1,0 +1,8 @@
+# Frontend
+/frontend
+
+# Database
+/database
+
+# Backend
+*.ear

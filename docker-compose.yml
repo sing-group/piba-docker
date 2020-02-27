@@ -1,0 +1,67 @@
+version: '3.4'
+services:
+  database:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.database
+    container_name: piba-database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "pibapass"
+      MYSQL_DATABASE: "piba"
+      MYSQL_USER: "piba"
+      MYSQL_PASSWORD: "pibapass"
+    volumes:
+      - piba-database-data:/var/lib/mysql
+    networks:
+      piba-network:
+        ipv4_address: 172.30.0.10
+  backend:
+    build:
+      context: .
+      args:
+        FRONTEND_IP: ${FRONTEND_IP:-172.30.0.30}
+        BACKEND_IP: ${BACKEND_IP:-172.30.0.20}
+        BACKEND_HTTP_PORT: ${BACKEND_HTTP_PORT:-8080}
+      dockerfile: docker/Dockerfile.backend
+    container_name: piba-backend
+    ports:
+      - "${BACKEND_HTTP_PORT:-8080}:8080"
+      - "${BACKEND_ADMIN_PORT:-9990}:9990"
+    restart: always
+    depends_on:
+      - database
+    volumes:
+      - piba-files:${FILES_DIRECTORY:-/piba-files}
+    environment:
+      FILES_DIRECTORY: "${FILES_DIRECTORY:-/piba-files}"
+    networks:
+      piba-network:
+        ipv4_address: 172.30.0.20
+  frontend:
+    build:
+      context: .
+      args:
+        BACKEND_HTTP_PORT: ${BACKEND_HTTP_PORT:-8080}
+        BACKEND_IP: ${BACKEND_IP:-172.30.0.20}
+      dockerfile: docker/Dockerfile.frontend
+    container_name: piba-frontend
+    ports:
+      - "${FRONTEND_HTTP_PORT:-80}:80"
+    restart: always
+    depends_on:
+      - database
+      - backend
+    networks:
+      piba-network:
+        ipv4_address: 172.30.0.30
+volumes:
+  piba-database-data:
+  piba-files:
+networks:
+  piba-network:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 172.30.0.0/16

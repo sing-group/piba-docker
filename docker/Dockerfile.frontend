@@ -1,0 +1,6 @@
+FROM nginx:alpine
+
+COPY frontend/dist/ /usr/share/nginx/html/
+ARG BACKEND_IP
+ARG BACKEND_HTTP_PORT
+RUN sed -i "s|https://sing-group.org|http://${BACKEND_IP}:${BACKEND_HTTP_PORT}|" /usr/share/nginx/html/main.5aac55029e62df20696b.js

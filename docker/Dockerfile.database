@@ -1,0 +1,5 @@
+FROM mariadb:10
+
+ARG version=1.0.0
+
+ADD database/piba.sql /docker-entrypoint-initdb.d/001.sql
