@@ -3,6 +3,9 @@ services:
   database:
     build:
       context: .
+      args:
+        DOWNLOAD_USER: ${DOWNLOAD_USER}
+        DOWNLOAD_PASSWORD: ${DOWNLOAD_PASSWORD}
       dockerfile: docker/Dockerfile.database
     container_name: piba-database
     restart: always
@@ -58,6 +61,7 @@ services:
 volumes:
   piba-database-data:
   piba-files:
+    external: true
 networks:
   piba-network:
     driver: bridge

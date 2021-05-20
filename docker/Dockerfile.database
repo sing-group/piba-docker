@@ -1,5 +1,7 @@
 FROM mariadb:10
 
 ARG version=1.0.0
+ARG DOWNLOAD_USER
+ARG DOWNLOAD_PASSWORD
 
-ADD database/piba.sql /docker-entrypoint-initdb.d/001.sql
+ADD https://${DOWNLOAD_USER}:${DOWNLOAD_PASSWORD}@static.sing-group.org/piba/media/${DOWNLOAD_USER}/piba.sql.gz /docker-entrypoint-initdb.d/001.sql.gz
