@@ -13,9 +13,6 @@ To use this tool, you need to have installed on your computer both Docker and Do
 
 [Install Docker Compose](https://docs.docker.com/compose/install/)
 
-[Install Docker]: (https://docs.docker.com/engine/install/ubuntu/)
-[Install Docker Compose]: https://docs.docker.com/compose/install/	"Install Docker Compose"
-
 ### Creating volumes
 
 There are two ways of working with this tool. You can setup PIBA to work with your own image and video files, or download then. This ways are basically differenced by the way of creating the volume.
