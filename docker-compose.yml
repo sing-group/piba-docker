@@ -10,10 +10,10 @@ services:
     container_name: piba-database
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "pibapass"
-      MYSQL_DATABASE: "piba"
-      MYSQL_USER: "piba"
-      MYSQL_PASSWORD: "pibapass"
+      MYSQL_ROOT_PASSWORD: pibapass
+      MYSQL_DATABASE: piba
+      MYSQL_USER: piba
+      MYSQL_PASSWORD: pibapass
     volumes:
       - piba-database-data:/var/lib/mysql
     networks:
