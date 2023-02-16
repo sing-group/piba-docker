@@ -1,6 +1,18 @@
 FROM nginx:alpine
 
-COPY frontend/dist/ /usr/share/nginx/html/
 ARG BACKEND_IP
 ARG BACKEND_HTTP_PORT
-RUN sed -i "s|https://sing-group.org|http://${BACKEND_IP}:${BACKEND_HTTP_PORT}|" /usr/share/nginx/html/main.5aac55029e62df20696b.js
+
+ARG FRONTEND_REPOSITORY
+ARG FRONTEND_VERSION
+
+ADD https://maven.sing-group.org/repository/npm-${FRONTEND_REPOSITORY}/@piba/frontend/-/frontend-${FRONTEND_VERSION}.tgz \
+    /usr/share/nginx/html/
+RUN cd /usr/share/nginx/html/ && \
+    tar xzf "frontend-${FRONTEND_VERSION}.tgz" && \
+    rm -f "frontend-${FRONTEND_VERSION}.tgz" && \
+    mkdir -p piba && \
+    mv package/dist/* piba && \
+    rm -rf package
+
+RUN sed -i "s|https://sing-group.org|http://${BACKEND_IP}:${BACKEND_HTTP_PORT}|" /usr/share/nginx/html/piba/main.*.js

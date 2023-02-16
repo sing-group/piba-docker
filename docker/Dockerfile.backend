@@ -1,8 +1,13 @@
 FROM jboss/wildfly:10.1.0.Final
 
+ARG BACKEND_REPOSITORY
+ARG BACKEND_VERSION
+ARG BACKEND_PACKAGE_VERSION
 
-ADD https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.13/mysql-connector-java-8.0.13.jar /opt/jboss/wildfly/standalone/deployments/mysql-connector-java-8.0.13.jar
-COPY backend/piba-backend-backend-0.1.0-SNAPSHOT.ear /opt/jboss/wildfly/standalone/deployments/
+ADD https://repo1.maven.org/maven2/mysql/mysql-connector-java/8.0.13/mysql-connector-java-8.0.13.jar \
+    /opt/jboss/wildfly/standalone/deployments/mysql-connector-java-8.0.13.jar
+ADD https://maven.sing-group.org/repository/maven-${BACKEND_REPOSITORY}/org/sing_group/piba-ear/${BACKEND_VERSION}/piba-ear-${BACKEND_PACKAGE_VERSION}.ear \
+    /opt/jboss/wildfly/standalone/deployments/
 COPY backend/standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
 
 USER root
