@@ -1,12 +1,15 @@
 #!/bin/sh -e
 
 # Directory where the volume with Local data is expected to be mounted
-DIR="/input-files"
+readonly DIR="/input-files"
 
+readonly BACKEND_UID=1000
+readonly BACKEND_GID=1000
+
+cd $DIR
 
 convert_files()
 {
-    cd $DIR
     for f in *.mp4; do
         ffmpeg -hide_banner -y -i "$f" -q:v 6 "${f%.*}.ogg"
     done
@@ -15,18 +18,11 @@ convert_files()
 }
 
 if [ -d "$DIR" ]; then
-    echo "Local(L) or remote(R)?"
-    read origin
-    if [[ ($origin == "L" || $origin == "l") ]]; then
-        echo "Local"
-        convert_files
+    printf "Local(L) or remote(R)? "
+    read -r origin
 
-    elif [[ ($origin == "R" || $origin == "r") ]]; then
-        echo "Remote"
-        echo "User:"
-        read user
-        echo "Password:"
-        read -s password
+    if [ "$origin" = "L" ] || [ "$origin" = "l" ]; then
+        echo "- Local"
 
         convert_files
     elif [ "$origin" = "R" ] || [ "$origin" = "r" ]; then
@@ -43,6 +39,9 @@ if [ -d "$DIR" ]; then
         trap - EXIT INT TERM
         echo
 
+        if wget -O /tmp/media.zip "https://static.sing-group.org/pibadb-requests/$uuid/media.zip" && \
+            unzip -o -P "$password" /tmp/media.zip
+        then
             convert_files
         else
             echo "Download error"
@@ -52,6 +51,9 @@ if [ -d "$DIR" ]; then
         echo "Unknown action"
         exit 1
     fi
+
+    # Ensure that the backend application container has permission to manipulate files here
+    chown -R $BACKEND_UID:$BACKEND_GID .
 else
     echo "Error: $DIR not found"
     exit 1

@@ -1,8 +1,7 @@
-FROM jrottenberg/ffmpeg
+FROM jrottenberg/ffmpeg:4.1-alpine
+
+RUN apk add unzip
 
 COPY script.sh /
-RUN chmod +x /script.sh \
-    && apt-get update \
-    && apt-get install -y wget \
-    && rm -rf /var/lib/apt/lists/*
+
 ENTRYPOINT ["/script.sh"]
