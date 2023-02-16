@@ -1,5 +1,9 @@
 FROM jboss/wildfly:10.1.0.Final
 
+ARG FRONTEND_IP
+ARG BACKEND_IP
+ARG BACKEND_HTTP_PORT
+
 ARG BACKEND_REPOSITORY
 ARG BACKEND_VERSION
 ARG BACKEND_PACKAGE_VERSION
@@ -11,15 +15,14 @@ ADD https://maven.sing-group.org/repository/maven-${BACKEND_REPOSITORY}/org/sing
 COPY backend/standalone.xml /opt/jboss/wildfly/standalone/configuration/standalone.xml
 
 USER root
-RUN chown jboss /opt/jboss/wildfly/standalone/deployments/*
+
+RUN chown jboss:jboss /opt/jboss/wildfly/standalone/deployments/*
+
+RUN sed -i "s|name=\"java:global/piba/swagger/host\" value=\"piba-backend:8080\"|name=\"java:global/piba/swagger/host\" value=\"${BACKEND_IP}:${BACKEND_HTTP_PORT}\"|" /opt/jboss/wildfly/standalone/configuration/standalone.xml
+RUN sed -i "s|name=\"java:global/piba/frontend/url\" value=\"http://piba-frontend/\"|name=\"java:global/piba/frontend/url\" value=\"http://${FRONTEND_IP}/\"|" /opt/jboss/wildfly/standalone/configuration/standalone.xml
+
 RUN sed -i 's/-Xmx512m/-Xmx4G/g' /opt/jboss/wildfly/bin/standalone.conf
 
 USER jboss
+
 CMD ["/opt/jboss/wildfly/bin/standalone.sh", "-b", "0.0.0.0", "-bmanagement", "0.0.0.0", "-Dpiba.files.dir=/piba-files"]
-
-ARG BACKEND_HTTP_PORT
-ARG BACKEND_IP
-ARG FRONTEND_IP
-
-RUN sed -i 's|name="java:global/piba/swagger/host" value="piba-backend:8080"|name="java:global/piba/swagger/host" value="${BACKEND_IP}:${BACKEND_HTTP_PORT}"|' /opt/jboss/wildfly/standalone/configuration/standalone.xml
-RUN sed -i 's|name="java:global/piba/frontend/url" value="http://piba-frontend/"|name="java:global/piba/frontend/url" value="http://${FRONTEND_IP}/"|' /opt/jboss/wildfly/standalone/configuration/standalone.xml
