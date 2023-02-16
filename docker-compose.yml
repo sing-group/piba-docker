@@ -19,6 +19,13 @@ services:
     networks:
       piba-network:
         ipv4_address: 172.30.0.10
+    healthcheck:
+      test: mysqladmin -p$$MYSQL_ROOT_PASSWORD ping || exit 1
+      start_period: 30s
+      interval: 2s
+      timeout: 4s
+      retries: 3
+
   backend:
     build:
       context: .
@@ -33,7 +40,8 @@ services:
       - "${BACKEND_ADMIN_PORT:-9990}:9990"
     restart: always
     depends_on:
-      - database
+      database:
+        condition: service_healthy
     volumes:
       - piba-files:${FILES_DIRECTORY:-/piba-files}
     environment:
