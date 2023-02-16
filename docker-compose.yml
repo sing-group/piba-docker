@@ -4,8 +4,8 @@ services:
     build:
       context: .
       args:
-        DOWNLOAD_USER: ${DOWNLOAD_USER}
-        DOWNLOAD_PASSWORD: ${DOWNLOAD_PASSWORD}
+        BUNDLE_UUID: ${BUNDLE_UUID}
+        BUNDLE_PASSWORD: ${BUNDLE_PASSWORD}
       dockerfile: docker/Dockerfile.database
     container_name: piba-database
     restart: always

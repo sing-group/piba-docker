@@ -1,15 +1,15 @@
 FROM mariadb:10
 
 ARG version=1.0.0
-ARG DOWNLOAD_USER
-ARG DOWNLOAD_PASSWORD
+ARG BUNDLE_UUID
+ARG BUNDLE_PASSWORD
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -yq unzip && \
     rm -rf /var/lib/apt/lists/*
 
-ADD https://static.sing-group.org/pibadb-requests/${DOWNLOAD_USER}/piba.sql.zip /docker-entrypoint-initdb.d/piba.sql.zip
-RUN unzip -P "${DOWNLOAD_PASSWORD}" -d /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d/piba.sql.zip && \
+ADD https://static.sing-group.org/pibadb-requests/${BUNDLE_UUID}/piba.sql.zip /docker-entrypoint-initdb.d/piba.sql.zip
+RUN unzip -P "${BUNDLE_PASSWORD}" -d /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d/piba.sql.zip && \
     rm -f /docker-entrypoint-initdb.d/piba.sql.zip && \
     chown mysql:mysql /docker-entrypoint-initdb.d/piba.sql

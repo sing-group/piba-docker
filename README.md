@@ -48,7 +48,7 @@ This will prompt `Local(L) or Remote(R)?` expecting your answer. If you select L
 
 Once you have your files downloaded and converted to correct format, you are ready to use PIBA.
 
-Before starting the application, you must go to the root folder and modify `.env` file, introducing your credentials on `DOWNLOAD_USER` and `DOWNLOAD_PASSWORD` fields. This is needed to download the `.sql` file for the database.
+Before starting the application, you must go to the root folder and modify `.env` file, introducing your credentials on `BUNDLE_UUID` and `BUNDLE_PASSWORD` fields. This is needed to download the `.sql` file for the database.
 
 The you are ready to build and start PIBA using the next instructions.
 
