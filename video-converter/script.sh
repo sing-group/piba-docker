@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh -e
 
 # Directory where the volume with Local data is expected to be mounted
 DIR="/input-files"
@@ -7,14 +7,11 @@ DIR="/input-files"
 convert_files()
 {
     cd $DIR
-    for f in *.mp4
-    do 
-        name=$(echo "$f" | cut -f 1 -d '.')
-        echo "$f file"
-        ffmpeg -i $name.mp4 -q:v 6 $name.ogg
+    for f in *.mp4; do
+        ffmpeg -hide_banner -y -i "$f" -q:v 6 "${f%.*}.ogg"
     done
-    
-    echo "Conversion finnished"
+
+    echo "Conversion finished"
 }
 
 if [ -d "$DIR" ]; then
@@ -31,21 +28,31 @@ if [ -d "$DIR" ]; then
         echo "Password:"
         read -s password
 
-        wget -qO- https://$user:$password@static.sing-group.org/piba/media/$user/sample.tar.gz --no-check-certificate | tar xvz - -C $DIR
-        if ! [ "$(ls -A $DIR)" ]; then
+        convert_files
+    elif [ "$origin" = "R" ] || [ "$origin" = "r" ]; then
+        echo "- Remote"
+
+        printf "Bundle UUID: "
+        read -r uuid
+
+        printf "Bundle password: "
+        stty -echo
+        trap 'stty echo' EXIT INT TERM
+        read -r password
+        stty echo
+        trap - EXIT INT TERM
+        echo
+
             convert_files
         else
-            echo "Error during download, not found files"
+            echo "Download error"
             exit 1
         fi
-
     else
         echo "Unknown action"
+        exit 1
     fi
 else
-    echo "Error: ${DIR} not found"
+    echo "Error: $DIR not found"
     exit 1
 fi
-
-echo "Exiting..."
-
