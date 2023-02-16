@@ -320,6 +320,7 @@
                 <simple name="java:global/piba/swagger/host" value="piba-backend:8080" type="java.lang.String"/>
                 <simple name="java:global/piba/swagger/basePath" value="/piba-backend/rest/api" type="java.lang.String"/>
                 <simple name="java:global/piba/defaultfilestorage/path" value="${piba.files.dir}" type="java.lang.String"/>
+                <simple name="java:global/piba/defaultfilestorage/original" value="DISABLED" type="java.lang.String"/>
                 <simple name="java:global/piba/frontend/url" value="http://piba-frontend/" type="java.lang.String"/>
             </bindings>
             <remote-naming/>
