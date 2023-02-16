@@ -46,9 +46,7 @@ services:
       database:
         condition: service_healthy
     volumes:
-      - piba-files:${FILES_DIRECTORY:-/piba-files}
-    environment:
-      FILES_DIRECTORY: "${FILES_DIRECTORY:-/piba-files}"
+      - piba-files:/piba-files
     networks:
       piba-network:
         ipv4_address: 172.30.0.20
