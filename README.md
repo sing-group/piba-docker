@@ -39,7 +39,7 @@ To use this utility, go to video-converter folder, and build and launch it with 
 ```bash
 cd video-converter
 docker build -t video-converter .
-docker run -it -v piba-files:/input-files video-converter
+docker run -it --rm -v piba-files:/input-files video-converter
 ```
 
 This will prompt `Local(L) or Remote(R)?` expecting your answer. If you select Local mode, it will do the conversion of your local files without downloading anything. If you select Remote mode, it will ask you for your credentials to download the files, and then it will convert them.
