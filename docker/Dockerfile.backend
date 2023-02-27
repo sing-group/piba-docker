@@ -16,7 +16,7 @@ COPY backend/standalone.xml /opt/jboss/wildfly/standalone/configuration/standalo
 
 USER root
 
-RUN chown jboss:jboss /opt/jboss/wildfly/standalone/deployments/*
+RUN chown -R jboss:jboss /opt/jboss/wildfly
 
 RUN sed -i "s|name=\"java:global/piba/swagger/host\" value=\"piba-backend:8080\"|name=\"java:global/piba/swagger/host\" value=\"${BACKEND_IP}:${BACKEND_HTTP_PORT}\"|" /opt/jboss/wildfly/standalone/configuration/standalone.xml
 RUN sed -i "s|name=\"java:global/piba/frontend/url\" value=\"http://piba-frontend/\"|name=\"java:global/piba/frontend/url\" value=\"http://${FRONTEND_IP}/\"|" /opt/jboss/wildfly/standalone/configuration/standalone.xml
