@@ -1,11 +1,11 @@
-PIBA Distribution
-=================
+**PIBA Distribution**
+=====================
 
 A Docker distribution of the PIBA repository.
 
-## How to install and use PIBA
+## **How to install and use PIBA**
 
-### Prerequisites
+### **Prerequisites**
 
 To use this tool, you need to have installed on your computer both Docker and Docker Compose. The instructions needed for installing this could be reached on the official website.
 
@@ -13,26 +13,52 @@ To use this tool, you need to have installed on your computer both Docker and Do
 
 [Install Docker Compose](https://docs.docker.com/compose/install/)
 
-### Creating volumes
+### **Getting the PIBAdb data**
 
-There are two ways of working with this tool. You can setup PIBA to work with your own image and video files, or download then. This ways are basically differenced by the way of creating the volume.
+In order to use PIBA, you first need to download the following two files from our servers:
 
-If you want to download the files from PIBA's repository, create the volume using the next instruction:
+- `piba.sql.zip`: a password-protected ZIP file containing a MySQL 8 dump of the PIBA database.
+- `media.zip`: a password-protected ZIP file which contains the full set of images and videos of PIBAdb.
+
+To proceed with this step, please refer to the e-mail that should have been sent to you with the applicable download instructions and password.
+
+Once these files are downloaded, start by extracting the `piba.sql` file from `piba.sql.zip` into the directory where this `README.md` file is located. PIBA needs such a database dump to function properly.
+
+Then extract the contents of `media.zip` to a directory of your choice. Take note of its absolute path, which will be assumed to be `/absolute/path/to/media` in the following sections.
+
+### **Creating the PIBAdb data volume**
+
+The PIBA backend expects the existence of a Docker volume with the name `piba-files`, which must contain the videos and images for the PIBAdb.
+
+There are two main ways to create and populate this volume, which are described below:
+
+- By bind-mounting `/absolute/path/to/media` to the volume. In other words, the volume will act as an alias to the `/absolute/path/to/media` directory, so that its contents and any changes to it will be shared between the host and the backend container.
+- By copying the contents of `/absolute/path/to/media` to the volume, so that the backend container has its own copy of the data, and any changes to the volume data are not visible to the host. This approach is slower and requires additional disk space.
+
+If in doubt, we suggest that you resort to the bind-mounting approach.
+
+#### **Bind-mounting the PIBAdb data volume**
+
+Just run the next command, replacing `/absolute/path/to/media` accordingly:
+
+```bash
+docker volume create --driver=local --opt type=none --opt o=bind --opt device="/absolute/path/to/media" piba-files
+```
+
+Note that the `piba-files` volume can be deleted without affecting the contents of `/absolute/path/to/media`, even if it is bind-mounted.
+
+#### **Copying the media data to the PIBAdb data volume**
+
+Run the following commands, replacing `/absolute/path/to/media` accordingly:
 
 ```bash
 docker volume create piba-files
+docker run --rm -v "/absolute/path/to/media":/media -v piba-files:/piba-files -w /media alpine /bin/sh -c 'cp * /piba-files'
 ```
 
-Otherwise, if you have your files in some local directory, use this instruction:
+### **Transconding PIBAdb videos**
 
-```bash
-docker volume create --driver=local --opt type=none --opt o=bind --opt device=/absolute/path/to/directory piba-files
-
-```
-
-### Using video converter / downloader
-
-PIBA needs to have video files both in `.mp4` and `.ogg` formats. To achieve this, there is an auxiliary tool that helps you converting your `.mp4` files to `.ogg` without losing quality. This is also used to download and covert the files if you want to use PIBA's data.
+PIBA needs to have video files both in `.mp4` and `.ogg` formats. To achieve this, there is an auxiliary tool that helps you converting the `.mp4` files in your `piba-files` volume to `.ogg` without losing quality.
 
 To use this utility, go to video-converter folder, and build and launch it with the next instructions:
 
@@ -40,17 +66,12 @@ To use this utility, go to video-converter folder, and build and launch it with 
 cd video-converter
 docker build -t video-converter .
 docker run -it --rm -v piba-files:/input-files video-converter
+cd ..
 ```
 
-This will prompt `Local(L) or Remote(R)?` expecting your answer. If you select Local mode, it will do the conversion of your local files without downloading anything. If you select Remote mode, it will ask you for your credentials to download the files, and then it will convert them.
+### **Using PIBA**
 
-### Using PIBA
-
-Once you have your files downloaded and converted to correct format, you are ready to use PIBA.
-
-Before starting the application, you must go to the root folder and modify `.env` file, introducing your credentials on `BUNDLE_UUID` and `BUNDLE_PASSWORD` fields. This is needed to download the `.sql` file for the database.
-
-The you are ready to build and start PIBA using the next instructions.
+Once you have completed the previous sections, you are ready to run PIBA by executing the following commands:
 
 ```bash
 docker-compose build

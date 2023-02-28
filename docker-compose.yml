@@ -3,9 +3,6 @@ services:
   database:
     build:
       context: .
-      args:
-        BUNDLE_UUID: ${BUNDLE_UUID}
-        BUNDLE_PASSWORD: ${BUNDLE_PASSWORD}
       dockerfile: docker/Dockerfile.database
     container_name: piba-database
     restart: always
