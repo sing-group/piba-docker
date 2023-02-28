@@ -11,7 +11,10 @@ cd $DIR
 convert_files()
 {
     for f in *.mp4; do
-        ffmpeg -hide_banner -y -i "$f" -q:v 6 "${f%.*}.ogg"
+        transcoded_file="${f%.*}.ogg"
+        if ! [ -f "$transcoded_file" ]; then
+            ffmpeg -hide_banner -y -i "$f" -q:v 6 "$transcoded_file"
+        fi
     done
 
     echo "Conversion finished"
