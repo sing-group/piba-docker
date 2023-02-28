@@ -78,5 +78,10 @@ docker-compose build
 docker-compose up
 ```
 
-If all goes well, PIBAdb will be available at either `http://172.30.0.30/piba` or `http://localhost/piba`. You can log in as one of the default users, such as `admin` (password: `adminpass`).
+If all goes well, PIBAdb will be available at either `http://172.30.0.30/piba` or `http://localhost/piba`. You can log in as one of the default users, which are:
 
+- `admin`, with password `adminpass`.
+- `user`, with password `userpass`.
+- `endoscopist`, with password `endoscopistpass`.
+
+For security reasons, we strongly recommend that you change these users or passwords before deploying PIBA to a production environment. Passwords can be changed using the web application.
